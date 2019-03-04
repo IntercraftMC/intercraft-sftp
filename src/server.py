@@ -41,7 +41,8 @@ class Server:
 		# Create the server socket
 		server = self.create_socket()
 
-		print("Ready")
+		# Give a little status...
+		print("Server running...")
 
 		while True:
 			# Accept the incoming connection and run it in a separate thread

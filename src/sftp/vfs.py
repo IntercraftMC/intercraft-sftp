@@ -108,7 +108,7 @@ class Vfs:
 	def mkdir(self, path):
 		dir = self.resolvePath(path)
 		if isinstance(dir, Path):
-			return os.mkdir(str(dir))
+			return os.mkdir(str(dir), 0o666)
 		raise OSError()
 
 
@@ -124,5 +124,5 @@ class Vfs:
 	def open(self, path, flags, mode):
 		dir = self.resolvePath(path)
 		if isinstance(dir, Path):
-			return os.open(str(dir), flags, mode)
+			return os.open(str(dir), flags, ((mode | 0o666) & (0xffb6)))
 		return OSError()

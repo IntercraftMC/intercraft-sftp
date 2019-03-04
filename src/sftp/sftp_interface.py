@@ -27,7 +27,6 @@ class SftpInterface (paramiko.SFTPServerInterface):
 
 	def list_folder(self, path):
 		path = self.__realpath(path)
-		print("LS", path)
 		try:
 			result = []
 			for file in self.__vfs.listdir(path):
@@ -42,7 +41,6 @@ class SftpInterface (paramiko.SFTPServerInterface):
 
 	def stat(self, path):
 		path = self.__realpath(path)
-		print("STAT", path)
 		try:
 			return SFTPAttributes.from_stat(self.__vfs.stat(path))
 		except OSError as e:
@@ -50,7 +48,6 @@ class SftpInterface (paramiko.SFTPServerInterface):
 
 
 	def lstat(self, path):
-		print("LSTAT", path)
 		path = self.__realpath(path)
 		try:
 			return SFTPAttributes.from_stat(self.__vfs.stat(path))
@@ -59,7 +56,6 @@ class SftpInterface (paramiko.SFTPServerInterface):
 
 
 	def open(self, path, flags, attr):
-		print("OPEN", path)
 		path = self.__realpath(path)
 
 		# Attempt to get a file descriptor
@@ -71,6 +67,11 @@ class SftpInterface (paramiko.SFTPServerInterface):
 			fd = self.__vfs.open(path, flags, mode or 0o666)
 		except OSError as e:
 			return SFTPServer.convert_errno(e.errno)
+
+		# if (flags & os.O_CREAT) and (attr is not None):
+		# 	print(attr.FLAG_PERMISSIONS)
+		# 	attr._flags &= ~attr.FLAG_PERMISSIONS
+		# 	SFTPServer.set_file_attr(path, attr)
 
 		try:
 			f = os.fdopen(fd, utils.file_open_mode(flags))
