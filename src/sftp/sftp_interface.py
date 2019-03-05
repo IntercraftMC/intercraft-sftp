@@ -6,7 +6,7 @@ from . sftp_handle import SftpHandle
 from . vfs import Vfs
 from . import utils
 
-class SftpInterface (paramiko.SFTPServerInterface):
+class SftpInterface(paramiko.SFTPServerInterface):
 
 	def __init__(self, session, *largs, **kwargs):
 		paramiko.SFTPServerInterface.__init__(self, session, *largs, **kwargs)

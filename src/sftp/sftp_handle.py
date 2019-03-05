@@ -1,7 +1,7 @@
 import os
 import paramiko
 
-class SftpHandle (paramiko.SFTPHandle):
+class SftpHandle(paramiko.SFTPHandle):
 
 	def stat(self):
 		try:

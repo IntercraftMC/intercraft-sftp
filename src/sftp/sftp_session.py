@@ -1,6 +1,6 @@
 import bcrypt
-import os
 import paramiko
+import time
 
 class SftpSession(paramiko.ServerInterface):
 
@@ -16,6 +16,7 @@ class SftpSession(paramiko.ServerInterface):
 		if not user:
 			return paramiko.AUTH_FAILED
 		if bcrypt.hashpw(password.encode(), user["password"].encode()) != user["password"].encode():
+			time.sleep(2) # Throttle failed attempts
 			return paramiko.AUTH_FAILED
 		self.__user = user
 		return paramiko.AUTH_SUCCESSFUL
