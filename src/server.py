@@ -41,17 +41,17 @@ class Server:
 		# Create the server socket
 		server = self.create_socket()
 
-		# Give a little status...
-		print("Server running...")
-
 		while True:
 			# Accept the incoming connection and run it in a separate thread
+			print("Waiting for connection...")
 			conn, addr = server.accept()
 			_thread.start_new_thread(self.run_thread, (conn, addr))
 
 
 	# Run a connection thread
 	def run_thread(self, conn, addr):
+
+		print("Connection established")
 
 		# Set up SSH/SFTP stuff and perform Handshake
 		transport = paramiko.Transport(conn)

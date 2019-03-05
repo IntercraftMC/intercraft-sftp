@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import paramiko
 from paramiko import SFTPAttributes, SFTPServer
+import pprint
 from . sftp_handle import SftpHandle
 from . vfs import Vfs
 from . import utils
@@ -18,6 +19,12 @@ class SftpInterface(paramiko.SFTPServerInterface):
 		user        = self.__session.user()
 		db          = self.__session.database()
 		filesystems = db.fetch_filesystems(user["user_id"])
+
+		# DEBUGGING
+		print("User:", user)
+		pp = pprint.PrettyPrinter(indent=4)
+		pp.pprint(filesystems)
+
 		return Vfs(filesystems)
 
 
