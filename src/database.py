@@ -17,6 +17,7 @@ class Database:
 		c     = self.__db.cursor(dictionary=True)
 		query = "SELECT * FROM `sftp_users` WHERE `username`=%s"
 		c.execute(query, (username,))
+		self.__db.commit()
 		return c.fetchone()
 
 
@@ -24,4 +25,5 @@ class Database:
 		c     = self.__db.cursor(dictionary=True)
 		query = "SELECT * FROM `filesystems` WHERE `user_id`=%s"
 		c.execute(query, (user_id,))
+		self.__db.commit()
 		return c.fetchall()
