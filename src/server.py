@@ -6,6 +6,7 @@ import _thread
 
 from . database import Database
 from . sftp import SftpHandle, SftpInterface, SftpSession
+from . vfs import IntercraftVfs, VfsStore
 
 class Server:
 
@@ -13,6 +14,8 @@ class Server:
 
 		# Connect to the database
 		self.__db = Database()
+
+		self.__vfs_store = VfsStore(self.__db, IntercraftVfs)
 
 		# Load the host key file
 		self.__host_key = paramiko.RSAKey.from_private_key_file(os.getenv("SFTP_PRIVATE_KEY"))
@@ -59,7 +62,7 @@ class Server:
 		transport.set_subsystem_handler("sftp", paramiko.SFTPServer, SftpInterface)
 
 		# Create the session instance
-		session = SftpSession(self.__db)
+		session = SftpSession(self)
 		transport.start_server(server=session)
 
 		# Accept the communication channel
@@ -67,5 +70,16 @@ class Server:
 		while transport.is_active():
 			time.sleep(1)
 
+		# Delete the session
+		del session
+
 		# Close the connection when finished
 		conn.close()
+
+
+	def database(self):
+		return self.__db
+
+
+	def vfs_store(self):
+		return self.__vfs_store

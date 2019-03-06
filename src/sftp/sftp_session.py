@@ -4,21 +4,31 @@ import time
 
 class SftpSession(paramiko.ServerInterface):
 
-	def __init__(self, db):
-		paramiko.ServerInterface.__init__(self)
-		self.__db = db
-		self.__user = None
+	def __init__(self, server):
+		super(SftpSession, self).__init__()
+		self.__server = server
+		self.__db     = server.database()
+		self.__store  = server.vfs_store()
+		self.__user   = None
+		self.__vfs    = None
+
+
+	# Do stuff when the login is accepted
+	def accept_login(self, user):
+		print("Loading session:", user["username"])
+		self.__user = user
+		self.__vfs  = self.__store.load(user["id"])
 
 
 	# Authenticate the user via username and password
 	def check_auth_password(self, username, password):
-		user = self.__db.fetch_sftp_user(username)
+		user = self.__server.database().fetch_user(username)
 		if not user:
 			return paramiko.AUTH_FAILED
 		if bcrypt.hashpw(password.encode(), user["password"].encode()) != user["password"].encode():
 			time.sleep(2) # Throttle failed attempts
 			return paramiko.AUTH_FAILED
-		self.__user = user
+		self.accept_login(user)
 		return paramiko.AUTH_SUCCESSFUL
 
 
@@ -45,3 +55,16 @@ class SftpSession(paramiko.ServerInterface):
 	# Get a reference to the authenticated user
 	def user(self):
 		return self.__user
+
+
+	# Get a reference to the VFS
+	def vfs(self):
+		return self.__vfs
+
+
+	# Clean up the closed session
+	def __del__(self):
+		print("Unloading the session")
+		if self.__user:
+			print("Unload session:", self.__user["username"])
+			self.__store.unload(self.__user["id"])

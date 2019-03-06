@@ -2,30 +2,15 @@ import os
 from pathlib import Path
 import paramiko
 from paramiko import SFTPAttributes, SFTPServer
-import pprint
 from . sftp_handle import SftpHandle
-from . vfs import Vfs
 from . import utils
 
 class SftpInterface(paramiko.SFTPServerInterface):
 
 	def __init__(self, session, *largs, **kwargs):
-		paramiko.SFTPServerInterface.__init__(self, session, *largs, **kwargs)
+		super(SftpInterface, self).__init__(session, *largs, **kwargs)
 		self.__session = session
-		self.__vfs     = self.init_filesystem()
-
-
-	def init_filesystem(self):
-		user        = self.__session.user()
-		db          = self.__session.database()
-		filesystems = db.fetch_filesystems(user["user_id"])
-
-		# DEBUGGING
-		print("User:", user)
-		pp = pprint.PrettyPrinter(indent=4)
-		pp.pprint(filesystems)
-
-		return Vfs(filesystems)
+		self.__vfs     = session.vfs()
 
 
 	def __realpath(self, path):
@@ -73,12 +58,8 @@ class SftpInterface(paramiko.SFTPServerInterface):
 			mode = getattr(attr, "st_mode", None)
 			fd = self.__vfs.open(path, flags, mode or 0o666)
 		except OSError as e:
+			print(e)
 			return SFTPServer.convert_errno(e.errno)
-
-		# if (flags & os.O_CREAT) and (attr is not None):
-		# 	print(attr.FLAG_PERMISSIONS)
-		# 	attr._flags &= ~attr.FLAG_PERMISSIONS
-		# 	SFTPServer.set_file_attr(path, attr)
 
 		try:
 			f = os.fdopen(fd, utils.file_open_mode(flags))
