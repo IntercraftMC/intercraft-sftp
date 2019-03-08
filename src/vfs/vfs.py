@@ -125,7 +125,7 @@ class Vfs:
 			raise OSError()
 		if isinstance(dir, Symlink) or isinstance(dir, Path):
 			return os.listdir(str(dir))
-		return list(dir["dirs"].keys())
+		return [n for n, d in dir["dirs"].items() if not isinstance(d, Symlink) or d.exists()]
 
 
 	# Stat a directory
