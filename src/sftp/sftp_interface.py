@@ -58,7 +58,6 @@ class SftpInterface(paramiko.SFTPServerInterface):
 			mode = getattr(attr, "st_mode", None)
 			fd = self.__vfs.open(path, flags, mode or 0o666)
 		except OSError as e:
-			print(e)
 			return SFTPServer.convert_errno(e.errno)
 
 		try:

@@ -10,9 +10,6 @@ class IntercraftVfs(Vfs):
 	def update_symlinks(self):
 		self.update_oc_symlinks()
 
-		pp = pprint.PrettyPrinter(indent=2)
-		pp.pprint(self.root())
-
 
 	# Update the OpenComputers symlinks
 	def update_oc_symlinks(self):
@@ -38,7 +35,6 @@ class IntercraftVfs(Vfs):
 
 	# Update the database when an FS symlink is moved
 	def validate_virtual_rename(self, old_path, new_path):
-		print("Validating move...")
 		opath = self.resolve_path(old_path)
 		if Path(new_path).name == "__UUID__":
 			if isinstance(opath, Symlink) and "fs" not in opath.extra():
@@ -59,5 +55,4 @@ class IntercraftVfs(Vfs):
 	# Update the symlink path in the database
 	def update_symlink_path(self, symlink, path):
 		if "fs" in symlink.extra():
-			print("Updating DB", path)
 			self.db().set_filesystem_path(symlink.extra()["fs"]["id"], str(path))

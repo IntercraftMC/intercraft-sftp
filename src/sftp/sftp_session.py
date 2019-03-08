@@ -64,7 +64,6 @@ class SftpSession(paramiko.ServerInterface):
 
 	# Clean up the closed session
 	def __del__(self):
-		print("Unloading the session")
 		if self.__user:
 			print("Unload session:", self.__user["username"])
 			self.__store.unload(self.__user["id"])
